@@ -7,6 +7,7 @@ import javax.mail.Message.RecipientType;
 import javax.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,10 @@ public class MailService {
     private JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
     private final RedisUtil redisUtil;
-    private static final String FROM_ADDRESS = "tsi04076@naver.com";
+
+    @Value("${spring.mail.username}")
+    private String fromAddressUserName;
+    private static final String NAVER_MAIL = "@naver.com";
 
     public void sendVerificationMail(String toEmail) {
         String verificationCode = CertCharacterGenerator.generate();
@@ -34,7 +38,7 @@ public class MailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false,
                 "UTF-8");
-            mimeMessageHelper.setFrom(MailService.FROM_ADDRESS);
+            mimeMessageHelper.setFrom(fromAddressUserName + NAVER_MAIL);
             mimeMessageHelper.setTo(toEmail);
             mimeMessageHelper.setSubject("[JP Shoppingmall] 회원가입 인증번호 입니다.");
             mimeMessageHelper.setText(message,true);
@@ -53,7 +57,7 @@ public class MailService {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             mimeMessage.addRecipients(RecipientType.TO, paymentSuccessDto.memberEmail());
-            mimeMessage.setFrom(MailService.FROM_ADDRESS);
+            mimeMessage.setFrom(fromAddressUserName + NAVER_MAIL);
             mimeMessage.setSubject("[JP Shoppingmall] 결재 내역을 보내드립니다.");
             mimeMessage.setText(message, "utf-8","html");
 
