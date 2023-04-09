@@ -1,5 +1,5 @@
 # jpshoppingmall
-개인 공부용 쇼핑몰 프로젝트(Just Practice Shoppingmall)
+쇼핑몰 프로젝트(Just Practice Shoppingmall)
 
 ## 사용기술, 개발 환경
 <img src="https://img.shields.io/badge/spring boot-2.7.2-6DB33F?style=flat&logo=Spring Boot&logoColor=white"/> <img src="https://img.shields.io/badge/mysql-8.0-4479A1?style=flat&logo=mysql&logoColor=white"/>
