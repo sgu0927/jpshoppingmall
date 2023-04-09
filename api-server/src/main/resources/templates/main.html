@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+
+<div class="main-content" layout:fragment="content">
+    <div class="album py-10 bg-light">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-5 mb-5 pt-5">
+                <div th:each="topProduct : ${tonNineProducts}" class="card shadow-sm">
+                    <div class="col">
+                        <a th:with="productId=${topProduct.id}"
+                           th:href="@{/products/{productId}(productId=${productId})}"
+                           style="text-decoration: none; color: black">
+                            <th:block th:each="imageFile : ${topProduct.productImageList}">
+                                <img class="bd-placeholder-img card-img-top"
+                                     width="300" height="300"
+                                     th:if="${imageFile.isTitle}"
+                                     th:src="|/images/${imageFile.getStoreFileName()}|"/>
+                            </th:block>
+                            <div class="card-body">
+                                <p class="h3 card-text" th:text="${topProduct.getName()}">상품명</p>
+                                <div class="star-ratings">
+                                    <div
+                                        th:with="ratingToPercent=${topProduct.rating} * 20"
+                                        class="star-ratings-fill space-x-2 text-lg"
+                                        th:style="|width: ${ratingToPercent}%;|"
+                                    >
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <div class="star-ratings-base space-x-2 text-lg">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span th:text="${topProduct['rating']}">평점</span>
+                                </div>
+                                <p th:unless="${topProduct['discountPercent'] == 0}">
+                                    <strong class="h4 text-muted"
+                                            th:text="|${topProduct['discountPercent']}%|">할인율</strong>
+                                    <del class="h5"
+                                         th:with="price=${topProduct['price']}"
+                                         th:text="|${#numbers.formatInteger(price, 0, 'COMMA')}원|">
+                                        가격
+                                    </del>
+                                </p>
+                                <p>
+                                    <strong class="h4"
+                                            th:with="discountedPrice=${topProduct['price']} * ((100 - ${topProduct['discountPercent']}) / 100)"
+                                            th:text="|${#numbers.formatInteger(discountedPrice, 0, 'COMMA')}원|">
+                                        할인된가격
+                                    </strong>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--        <div sec:authorize="isAuthenticated()">-->
+    <!--            <p th:text="|${#authentication.getPrincipal().getNickname()}님 환영합니다.|"></p>-->
+    <!--            <div sec:authorize="isAuthenticated()" class="alert alert-primary" role="alert">-->
+    <!--                Name: <span sec:authentication="name">secName</span><br />-->
+    <!--                &lt;!&ndash;        Principal: <span sec:authentication="principal">PrincipalString</span><br />&ndash;&gt;-->
+    <!--                HasRole(USER): <span sec:authorize="hasRole('ROLE_USER')">Role User</span><br />-->
+    <!--                HasRole(ADMIN): <span sec:authorize="hasRole('ROLE_ADMIN')">Role Admin</span>-->
+    <!--            </div>-->
+    <!--            <ul>-->
+    <!--                <li th:text="|authentication.principal = ${#authentication.getPrincipal()}|"></li>-->
+    <!--                <li th:text="|session.getId = ${#session.getId()}|"></li>-->
+    <!--                <li th:text="|session.getAttributeNames = ${#session.getAttributeNames()}|"></li>-->
+    <!--                <li th:text="|session.getCreationTime = ${#session.getCreationTime()}|"></li>-->
+    <!--            </ul>-->
+    <!--        </div>-->
+</div>
+</html>

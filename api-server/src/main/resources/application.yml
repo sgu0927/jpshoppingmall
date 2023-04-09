@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    include:
+      - core
+  kafka:
+    bootstrap-servers: localhost:9092
+  session:
+    storage-type: redis
+  redis:
+    host: localhost
+    port: 6379
+  thymeleaf:
+    cache: false
+
+#file:
+#  dir: D:\jpshoppingmall\jpshoppingmall\images
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
+#        SQL: DEBUG
+
+test-login: true

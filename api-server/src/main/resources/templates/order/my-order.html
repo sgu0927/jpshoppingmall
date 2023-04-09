@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+
+<div class="main-content" layout:fragment="content" style="margin-top: 100px;">
+    <div th:each="order : ${orders.content}"
+         style="max-width: 1280px; padding: 15px; margin-left: auto; margin-right: auto;">
+        <div class="bg-body-tertiary p-5 rounded">
+            <h2 th:text="${order.displayName}">구매 상품명</h2>
+            <h3>
+                <strong
+                    th:with="paidAmount=${order.paidAmount}"
+                    th:text="|총 구매 가격: ${#numbers.formatInteger(paidAmount, 0, 'COMMA')}원|">
+                </strong>
+            </h3>
+            <p th:text="|주문시간 : ${order.orderedDateTime}|"></p>
+            <a class="btn btn-lg btn-primary" role="button"
+               th:href="@{/members/{memberId}/orders/{orderId}(memberId=${memberId}, orderId=${order.id})}">상세조회</a>
+        </div>
+    </div>
+    <div class="text-center d-flex justify-content-center">
+        <nav aria-label="Page navigation" style="text-align: center;">
+            <ul class="pagination"
+                th:with="start=${T(java.lang.Math).floor(orders.number/10)*10 + 1},
+                    last=(${start + 9 < orders.totalPages ? start + 9 : (orders.totalPages == 0 ? 1 :orders.totalPages)})">
+                <li class="page-item"
+                    th:class="${orders.first} ? 'page-item disabled'">
+                    <a th:href="@{__${#httpServletRequest.requestURI}__(page=0)}"
+                       class="page-link" aria-label="First">
+                        <span aria-hidden="true">First</span>
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:class="${orders.first} ? 'page-item disabled'">
+                    <a class="page-link"
+                       th:href="${orders.first} ? '#' :@{__${#httpServletRequest.requestURI}__(page=${orders.number}-1)}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, last)}"
+                    th:class="${page == orders.number + 1} ? 'page-item active'">
+                    <a class="page-link" th:text="${page}"
+                       th:href="@{__${#httpServletRequest.requestURI}__(page=${page}-1)}"></a>
+                </li>
+                <li class="page-item" th:class="${orders.last} ? 'page-item disabled'">
+                    <a class="page-link"
+                       th:href="${orders.last} ? '#' : @{__${#httpServletRequest.requestURI}__(page=${orders.number + 1})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:class="${orders.last} ? 'page-item disabled'">
+                    <a th:href="@{__${#httpServletRequest.requestURI}__(page=${orders.totalPages} - 1)}"
+                       class="page-link" aria-label="Last">
+                        <span aria-hidden="true">Last</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</html>

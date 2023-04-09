@@ -1,0 +1,22 @@
+server:
+  port: 8555
+
+spring:
+  batch:
+    job:
+      names: ${job.name:NONE}
+    jdbc:
+      initialize-schema: always
+  profiles:
+    include:
+      - core
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
+#        SQL: DEBUG

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+
+<!--    <script type="text/javascript" th:inline="javascript">-->
+    <script th:inline="javascript">
+        var emailValidObj = {
+            sendVerificationMail : function() {
+                var email = $("input[name='email']").val();
+                console.log(email);
+                var emailObj = {};
+                emailObj['email'] = email;
+                $.ajax({
+                    type : "POST",
+                    url  : "/email/verification",
+                    data        : JSON.stringify(emailObj),
+                    contentType : "application/json",
+                    success : function(data) {
+                        alert("3분안에 인증번호를 입력해주세요.");
+                    },
+                    error   : function(e) {
+                        alert(e.responseText);
+                    }
+                })
+            }
+        }
+
+        // 회원가입 스크립트
+        // 유효성 체크 컨텍스트
+        var validChk = {
+
+            // 닉네임 중복 체크
+            duplicateNicknameChkFn          : validCallback.duplicateNicknameChkFnCb,
+            // 이메일 중복 체크
+            duplicateEmailChkFn          : validCallback.duplicateEmailChkFnCb,
+            // 이메일 인증 체크
+            verificationCodeChkFn   :  validCallback.verificationCodeChkFnCb,
+            // 빈값 체크
+            emptyChkFn              : validCallback.emptyChkFnCb,
+            // 비밀번호 확인 유효성 체크
+            pwdConfirmValidChkFn    : validCallback.pwdConfirmValidChkFnCb,
+            // 입력 데이터 종합 유효성 체크
+            registerValidChkFn      : validCallback.registerValidChkFnCb
+        }
+
+        var registerInput = {
+
+            // 회원가입 완료
+            registerSubmitFn	: function() {
+
+                // 유효성 검사
+                if (!validChk.registerValidChkFn()) {
+                    return;
+                }
+
+                // 회원가입 폼 전송
+                $("#registerFrm").submit();
+            }
+        }
+
+        $(function() {
+
+            // request에 담긴 데이터
+            if ([[${errorMsg}]]) {
+                alert([[${errorMsg}]]);
+            }
+            // 회원가입 완료 메시지
+            if ([[${registerComplete}]]) {
+                alert([[${registerComplete}]])
+            }
+        })
+
+
+    </script>
+
+    <section>
+        <div class="container" style="max-width: 500px; padding: 15px">
+            <div class="row justify-content-center">
+                <div class="col-md-10 w-100 m-auto pt-5 text-center">
+                    <form id="registerFrm" th:action="@{/join}" th:object="${memberForm}"
+                          method="post">
+                        <img class="mt-5 mb-4" width="72" height="57"
+                             th:src="@{/images/farmer.png}"/>
+                        <h1 class="h3 mb-3 fw-normal">회원 가입</h1>
+                        <div class="input-group mb-3">
+                            <input type="text" id="register-nickname" th:field="*{nickname}"
+                                   class="form-control registrationInput" placeholder="닉네임"
+                                   autocomplete="off" required>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="nicknameDupChkBtn"
+                                    th:onclick="validChk.duplicateNicknameChkFn()">중복 확인
+                            </button>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" id="email" name="email" th:field="*{email}"
+                                   class="form-control registrationInput" placeholder="이메일"
+                                   autocomplete="off"
+                                   required>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="emailDupChkBtn" th:onclick="validChk.duplicateEmailChkFn()">
+                                중복 확인
+                            </button>
+                        </div>
+                        <button class="btn btn-success btn-large form-control mb-3" type="button"
+                                id="button-addon2" th:onClick="emailValidObj.sendVerificationMail()">인증번호 요청
+                        </button>
+                        <div class="input-group mb-3">
+                            <input type="text" name="verificationCode" class="form-control"
+                                   placeholder="이메일 인증 번호" id="verificationCode"
+                                   autocomplete="off" required/>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="emailVerifyBtn" th:onClick="validChk.verificationCodeChkFn()">확인
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" th:field="*{password}" name="password"
+                                   class="form-control registrationInput"
+                                   placeholder="비밀번호" autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="checkPassword" class="form-control"
+                                   placeholder="비밀번호 확인" autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" th:field="*{name}"
+                                   class="form-control registrationInput"
+                                   placeholder="이름" autocomplete="off" required/>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" th:for="genderType">성별</label>
+                            <select class="form-select registrationInput" th:field="*{genderType}">
+                                <option th:each="genderType : ${genderTypes}"
+                                        th:value="${genderType.name()}" th:text="${genderType.name()}">
+                                    성별
+                                </option>
+                                <!--                                <option value="W">여</option>-->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" th:field="*{birthday}"
+                                   class="form-control registrationInput"
+                                   placeholder="생년월일(yyyyMMdd)" autocomplete="off"/>
+                        </div>
+                        <div style="margin-bottom: 50px;">
+                            <input type="text" th:field="*{phone}"
+                                   class="form-control registrationInput"
+                                   placeholder="전화번호(-생략)" autocomplete="off"/>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-dark btn-large form-control"
+                                    onclick="registerInput.registerSubmitFn()">Join
+                            </button>
+<!--                            <button type="submit" class="btn btn-dark btn-large form-control"-->
+<!--                                    onclick="registerInput.registerSubmitFn()">Join-->
+<!--                            </button>-->
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-large form-control"
+                                    id="btn_loginForm">Back
+                            </button>
+                        </div>
+                    </form>
+                    <hr class="separator"/>
+                    <div>
+                        <h1>DEMO</h1>
+                        <p>©2019 All Rights Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!--<script>-->
+<!--    $('#checkPwd').click(function() {-->
+<!--        const checkPassword = $('#password').val();-->
+<!--        if(!checkPassword || checkPassword.trim() === ""){-->
+<!--            alert("비밀번호를 입력하세요.");-->
+<!--        } else{-->
+<!--            $.ajax({-->
+<!--                type: 'GET',-->
+<!--                url: '/rest/checkPwd',-->
+<!--                data: {'checkPassword': checkPassword},-->
+<!--                datatype: "text"-->
+<!--            }).done(function(result){-->
+<!--                console.log(result);-->
+<!--                if(result){-->
+<!--                    console.log("비밀번호 일치");-->
+<!--                    window.location.href="/settings/update";-->
+<!--                } else if(!result){-->
+<!--                    console.log("비밀번호 틀림");-->
+<!--                    // 비밀번호가 일치하지 않으면-->
+<!--                    alert("비밀번호가 맞지 않습니다.");-->
+<!--                    window.location.reload();-->
+<!--                }-->
+<!--            }).fail(function(error){-->
+<!--                alert(JSON.stringify(error));-->
+<!--            })-->
+<!--        }-->
+<!--    });-->
+
+
+<!--</script>-->
+
+</html>

@@ -1,0 +1,8 @@
+rootProject.name = 'jpshoppingmall'
+include 'core'
+include 'api-server'
+include 'mail-server'
+include 'purchase-server'
+include 'order-server'
+include 'purchase-batch'
+

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<header class="p-2 text-bg-success fixed-top" th:fragment="headerFragment">
+    <script type="text/javascript" th:inline="javascript">
+	document.addEventListener("DOMContentLoaded", function(){
+
+
+    	/////// Prevent closing from click inside dropdown
+		document.querySelectorAll('.dropdown-menu').forEach(function(element){
+			element.addEventListener('click', function (e) {
+			  e.stopPropagation();
+			});
+		})
+
+
+
+		// make it as accordion for smaller screens
+		if (window.innerWidth < 992) {
+
+			// close all inner dropdowns when parent is closed
+			document.querySelectorAll('.navbar .dropdown').forEach(function(everydropdown){
+				everydropdown.addEventListener('hidden.bs.dropdown', function () {
+					// after dropdown is hidden, then find all submenus
+					  this.querySelectorAll('.submenu').forEach(function(everysubmenu){
+					  	// hide every submenu as well
+					  	everysubmenu.style.display = 'none';
+					  });
+				})
+			});
+
+			document.querySelectorAll('.dropdown-menu a').forEach(function(element){
+				element.addEventListener('click', function (e) {
+
+				  	let nextEl = this.nextElementSibling;
+				  	if(nextEl && nextEl.classList.contains('submenu')) {
+				  		// prevent opening link if link needs to open dropdown
+				  		e.preventDefault();
+				  		console.log(nextEl);
+				  		if(nextEl.style.display == 'block'){
+				  			nextEl.style.display = 'none';
+				  		} else {
+				  			nextEl.style.display = 'block';
+				  		}
+
+				  	}
+				});
+			})
+		}
+		// end if innerWidth
+
+	});
+	// DOMContentLoaded  end
+
+
+
+    </script>
+
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark text-bg-success">
+            <div class="container-fluid">
+                <a href="/"
+                   class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <img width="40" height="32" th:src="@{/images/farmer.png}"/>
+                    <!--          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>-->
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#main_nav" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="main_nav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active"><a class="nav-link text-white"
+                                                       href="/">Home </a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#"> About </a>
+                        </li>
+                        <li sec:authorize="hasRole('ROLE_SELLER')" class="nav-item"><a
+                            sec:authorize="hasRole('ROLE_SELLER')" class="nav-link text-white"
+                            th:href="@{/product-register}"> 상품 등록 </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#"
+                               data-bs-toggle="dropdown">
+                                카테고리 </a>
+                            <ul class="dropdown-menu">
+                                <th:block th:each="category : ${categoryList}">
+                                    <li th:if="${!category.hasChild && (category.parentCategoryId == null)}">
+                                        <a class="dropdown-item"
+                                           th:with="categoryId=${category.id}"
+                                           th:href="@{/category-product/{categoryId}(categoryId=${categoryId})}"
+                                           th:text="${category.categoryName}"> Dropdown item </a>
+                                    </li>
+                                    <li th:if="${category.hasChild && (category.parentCategoryId == null)}">
+                                        <a class="dropdown-item"
+                                           th:with="categoryId=${category.id}"
+                                           th:href="@{/category-product/{categoryId}(categoryId=${categoryId})}"
+                                           th:text="|${category.categoryName} &raquo; |">
+                                            Dropdown item 2 &raquo;
+                                        </a>
+                                        <ul class="submenu dropdown-menu">
+                                            <th:block th:each="child : ${categoryList}">
+                                                <li th:if="${child.parentCategoryId == category.id && !child.hasChild}">
+                                                    <a class="dropdown-item"
+                                                       th:with="categoryId=${child.id}"
+                                                       th:href="@{/category-product/{categoryId}(categoryId=${categoryId})}"
+                                                       th:text="${child.categoryName}">Submenu item
+                                                        1</a>
+                                                </li>
+                                                <li th:if="${child.parentCategoryId == category.id && child.hasChild}">
+                                                    <a class="dropdown-item"
+                                                       th:with="categoryId=${child.id}"
+                                                       th:href="@{/category-product/{categoryId}(categoryId=${categoryId})}"
+                                                       th:text="|${child.categoryName} &raquo; |">Submenu
+                                                        item
+                                                        2</a>
+                                                    <ul class="submenu dropdown-menu">
+                                                        <th:block
+                                                            th:each="grandChild : ${categoryList}">
+                                                            <li th:if="${grandChild.parentCategoryId == child.id && !grandChild.hasChild}">
+                                                                <a class="dropdown-item"
+                                                                   th:with="categoryId=${grandChild.id}"
+                                                                   th:href="@{/category-product/{categoryId}(categoryId=${categoryId})}"
+                                                                   th:text="${grandChild.categoryName}">Submenu
+                                                                    item
+                                                                    1</a>
+                                                            </li>
+                                                        </th:block>
+                                                    </ul>
+                                            </th:block>
+                                        </ul>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </li>
+                    </ul>
+                </div> <!-- navbar-collapse.// -->
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <div class="hstack gap-2">
+                        <input type="search" class="form-control form-control-dark text-bg-light"
+                               placeholder="Search..." aria-label="Search">
+                        <button class="btn btn-light" type="submit">Search</button>
+                    </div>
+                </form>
+                <div sec:authorize="isAnonymous()" class="text-end">
+                    <button th:onclick="|location.href='@{/login}'|" type="button"
+                            class="btn btn-outline-light me-2">Login
+                    </button>
+                    <button th:onclick="|location.href='@{/join}'|" type="button"
+                            class="btn btn-warning">Sign-up
+                    </button>
+                </div>
+                <div sec:authorize="isAuthenticated()" class="text-end hstack gap-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#">
+                        <img width="40" height="40"
+                             th:if="${profileImagePath != null}"
+                             th:src="|/images/${profileImagePath}|"
+                             alt="Profile" class="rounded-circle">
+                    </a>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#"
+                           th:text="|${#authentication.getPrincipal().getNickname()}님|"
+                           data-bs-toggle="dropdown">
+                            닉네임 </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item"
+                                   th:with="memberId=${#authentication.getPrincipal().getMemberId()}"
+                                   th:href="@{/members/{memberId}(memberId=${memberId}, currentMenu='profile')}">마이페이지</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:with="memberId=${#authentication.getPrincipal().getMemberId()}"
+                                   th:href="@{/members/{memberId}/carts(memberId=${memberId})}">
+                                    나의 장바구니</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:with="memberId=${#authentication.getPrincipal().getMemberId()}"
+                                   th:href="@{/members/{memberId}/orders(memberId=${memberId})}">
+                                    주문내역</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <button th:onclick="|location.href='@{/logout}'|" type="button"
+                            class="btn btn-outline-light me-2">로그아웃
+                    </button>
+                </div>
+            </div> <!-- container-fluid.// -->
+        </nav>
+    </div>
+</header>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+    <section>
+        <div class="container" style="max-width: 800px; padding: 50px">
+            <div class="row">
+                <div class="col pt-5">
+                    <img th:each="imageFile : ${productDetail.productImageList}"
+                         th:if="${imageFile.isTitle}" class="mt-5 mb-4" width="300" height="300"
+                         th:src="|/images/${imageFile.getStoreFileName()}|"/>
+                </div>
+                <div class="col pt-5">
+                    <h2 th:text="${productDetail['name']}" class="h2 mb-3 fw-normal">상품명</h2> <br/>
+                    <a th:with="productId=${productDetail.id}"
+                       th:href="@{/products/{productId}(productId=${productId})}"
+                       style="text-decoration: none; color: black">
+                        <div class="star-ratings">
+                            <div
+                                th:with="ratingToPercent=${productDetail.rating} * 20"
+                                class="star-ratings-fill space-x-2 text-lg"
+                                th:style="|width: ${ratingToPercent}%;|"
+                            >
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
+                            <div class="star-ratings-base space-x-2 text-lg">
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
+                        </div>
+                        <span class="text-warning" th:text="|${productDetail['rating']} (상품 상세로 돌아가기)|">평점</span>
+                    </a>
+                    <p th:unless="${productDetail['discountPercent'] == 0}">
+                        <strong class="h4 text-muted"
+                                th:text="|${productDetail['discountPercent']}%|">할인율</strong>
+                        <del class="h5" th:text="|${productDetail['price']}원|">가격</del>
+                    </p>
+                    <div class="row justify-content-between">
+                        <strong class="h4 text-start"
+                                th:with="discountedPrice=${productDetail['price']} * ((100 - ${productDetail['discountPercent']}) / 100)"
+                                th:text="|${#numbers.formatInteger(discountedPrice, 0, 'COMMA')}원|">할인된
+                            가격</strong>
+                        <span class="text-end text-body-secondary"
+                              th:text="|${purchaseCount}개 구매|"> 구매 개수
+                        </span>
+                    </div>
+                    <form
+                        th:with="productId=__${productId}__"
+                        th:action="@{/members/{memberId}/carts(memberId=${memberId}, productId=__${productId}__)}"
+                        th:object="${addCartForm}" method="post">
+                        <div class="mb-2">
+                            <label for="totalCount" class="visually-hidden">수량</label>
+                            <input type="number" id="totalCount" name="totalCount"
+                                   class="form-control"
+                                   th:field="*{count}"
+                                   placeholder="구매 수량을 입력해주세요." min="1"
+                                   autocomplete="off" required/>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block mx-auto">
+                            <button type="submit" class="btn w-100 btn-success btn-lg">장바구니 담기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="separator"/>
+            <div th:if="${reviews.totalElements} == 0">
+                <h3 class="text-center mb-5" th:if="${reviews.totalElements} == 0">리뷰가 존재하지
+                    않습니다.</h3>
+            </div>
+            <div class="row" th:each="review : ${reviews.content}">
+                <div class="col">
+                    <img width="40" height="40"
+                         th:if="${review.profileImagePath} != null"
+                         th:src="|/images/${review.profileImagePath}|"
+                         alt="Profile" class="rounded-circle">
+                    <span th:text="${review.nickname}">리뷰 작성 유저 닉네임</span>
+                    <div class="star-ratings">
+                        <div
+                            th:with="ratingToPercent=${review.rating} * 20"
+                            class="star-ratings-fill space-x-2 text-lg"
+                            th:style="|width: ${ratingToPercent}%;|"
+                        >
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <div class="star-ratings-base space-x-2 text-lg">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <span th:text="${productDetail['rating']}">평점</span>
+                    </div>
+                    <p th:text="${review.comment}">리뷰 내용</p>
+
+                    <p th:with="createdDateTime=${review.createdDateTime}"
+                       th:text="|${#temporals.year(createdDateTime)}년 ${#temporals.month(createdDateTime)}월 ${#temporals.day(createdDateTime)}일 작성|">
+                        >리뷰 작성 시간</p>
+                </div>
+            </div>
+            <div class="text-center d-flex justify-content-center">
+                <nav aria-label="Page navigation" style="text-align: center;">
+                    <ul class="pagination"
+                        th:with="start=${T(java.lang.Math).floor(reviews.number/10)*10 + 1},
+                    last=(${start + 9 < reviews.totalPages ? start + 9 : (reviews.totalPages == 0 ? 1 :reviews.totalPages)})">
+                        <li class="page-item"
+                            th:class="${reviews.first} ? 'page-item disabled'">
+                            <a th:href="@{__${#httpServletRequest.requestURI}__(page=0)}"
+                               class="page-link" aria-label="First">
+                                <span aria-hidden="true">First</span>
+                            </a>
+                        </li>
+                        <li class="page-item"
+                            th:class="${reviews.first} ? 'page-item disabled'">
+                            <a class="page-link"
+                               th:href="${reviews.first} ? '#' :@{__${#httpServletRequest.requestURI}__(page=${reviews.number}-1)}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, last)}"
+                            th:class="${page == reviews.number + 1} ? 'page-item active'">
+                            <a class="page-link" th:text="${page}"
+                               th:href="@{__${#httpServletRequest.requestURI}__(page=${page}-1)}"></a>
+                        </li>
+                        <li class="page-item" th:class="${reviews.last} ? 'page-item disabled'">
+                            <a class="page-link"
+                               th:href="${reviews.last} ? '#' : @{__${#httpServletRequest.requestURI}__(page=${reviews.number + 1})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:class="${reviews.last} ? 'page-item disabled'">
+                            <a th:href="@{__${#httpServletRequest.requestURI}__(page=${reviews.totalPages} - 1)}"
+                               class="page-link" aria-label="Last">
+                                <span aria-hidden="true">Last</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

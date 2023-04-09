@@ -1,0 +1,35 @@
+server:
+  port: 8777
+  ssl:
+    enabled: true
+    key-store: keystore.p12
+    key-store-password: shoppingmall
+    key-store-type: PKCS12
+    key-alias: bns-ssl
+
+spring:
+  profiles:
+    include:
+      - core
+  kafka:
+    bootstrap-servers: localhost:9092
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: tsi04076
+    password: u9n0zz03
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+            check-server-identity: true
+            trust: smtp.naver.com
+            socketFactory.class: javax.net.ssl.SSLSocketFactory
+        debug: true
+  redis:
+    host: localhost
+    port: 6379

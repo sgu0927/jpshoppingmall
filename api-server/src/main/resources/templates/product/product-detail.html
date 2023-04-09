@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+    <section>
+        <div class="container" style="max-width: 800px; padding: 50px">
+            <div class="row">
+                <div class="col pt-5">
+                    <img th:each="imageFile : ${productDetail.productImageList}"
+                         th:if="${imageFile.isTitle}" class="mt-5 mb-4" width="300" height="300"
+                         th:src="|/images/${imageFile.getStoreFileName()}|"/>
+                </div>
+                <div class="col pt-5">
+                    <h2 th:text="${productDetail['name']}" class="h2 mb-3 fw-normal">상품명</h2> <br/>
+                    <a th:with="productId=${productDetail.id}"
+                       th:href="@{/products/{productId}/reviews(productId=${productId})}"
+                       style="text-decoration: none; color: black">
+                        <div class="star-ratings">
+                            <div
+                                th:with="ratingToPercent=${productDetail.rating} * 20"
+                                class="star-ratings-fill space-x-2 text-lg"
+                                th:style="|width: ${ratingToPercent}%;|"
+                            >
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
+                            <div class="star-ratings-base space-x-2 text-lg">
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
+                        </div>
+                        <span class="text-warning" th:text="|${productDetail['rating']} (리뷰 조회)|">평점</span>
+                    </a>
+                    <p th:unless="${productDetail['discountPercent'] == 0}">
+                        <strong class="h4 text-muted"
+                                th:text="|${productDetail['discountPercent']}%|">할인율</strong>
+                        <del class="h5" th:text="|${productDetail['price']}원|">가격</del>
+                    </p>
+                    <div class="row justify-content-between">
+                        <strong class="h4 text-start"
+                               th:with="discountedPrice=${productDetail['price']} * ((100 - ${productDetail['discountPercent']}) / 100)"
+                               th:text="|${#numbers.formatInteger(discountedPrice, 0, 'COMMA')}원|">할인된
+                        가격</strong>
+                        <span class="text-end text-body-secondary"
+                             th:text="|${purchaseCount}개 구매|"> 구매 개수
+                        </span>
+                    </div>
+                    <form
+                        th:with="productId=__${productId}__"
+                        th:action="@{/members/{memberId}/carts(memberId=${memberId}, productId=__${productId}__)}"
+                        th:object="${addCartForm}" method="post">
+                        <div class="mb-2">
+                            <label for="totalCount" class="visually-hidden">수량</label>
+                            <input type="number" id="totalCount" name="totalCount"
+                                   class="form-control"
+                                   th:field="*{count}"
+                                   placeholder="구매 수량을 입력해주세요." min="1"
+                                   autocomplete="off" required/>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block mx-auto">
+                            <button type="submit" class="btn w-100 btn-success btn-lg">장바구니 담기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="separator"/>
+            <div class="row">
+                <div class="col pt-5">
+                    <img th:each="imageFile : ${productDetail.productImageList}"
+                         th:unless="${imageFile.isTitle}" class="mt-5 mb-4 mw-100"
+                         th:src="|/images/${imageFile.getStoreFileName()}|"/>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

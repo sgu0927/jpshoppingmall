@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/default-head :: headFragment">
+        <meta charset="utf-8">
+    </head>
+    <body id="page-top">
+        <div id="wrapper">
+            <div id="content-wrapper" class="d-flex flex-column">
+                <div id="content">
+                    <th:block layout:fragment="content"></th:block>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

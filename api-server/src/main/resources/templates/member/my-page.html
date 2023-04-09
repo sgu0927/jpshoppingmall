@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+
+    <script th:inline="javascript">
+        var emailValidObj = {
+            sendVerificationMail : function() {
+                var email = $("input[name='email']").val();
+                console.log(email);
+                var emailObj = {};
+                emailObj['email'] = email;
+                $.ajax({
+                    type : "POST",
+                    url  : "/email/verification",
+                    data        : JSON.stringify(emailObj),
+                    contentType : "application/json",
+                    success : function(data) {
+                        alert("3분안에 인증번호를 입력해주세요.");
+                    },
+                    error   : function(e) {
+                        alert(e.responseText);
+                    }
+                })
+            }
+        }
+
+        // 회원가입 스크립트
+        // 유효성 체크 컨텍스트
+        var changeInfoValidChk = {
+            // 닉네임 중복 체크
+            duplicateNicknameChkFn          : changeInfoValidCb.duplicateNicknameChkFnCb,
+            // 이메일 중복 체크
+            duplicateEmailChkFn          : changeInfoValidCb.duplicateEmailChkFnCb,
+            // 이메일 인증 체크
+            verificationCodeChkFn   :  changeInfoValidCb.verificationCodeChkFnCb,
+            // 닉네임 변경 유효성 체크
+            changeNicknameValidChkFn      : changeInfoValidCb.changeNicknameValidChkFnCb,
+            // 패스워드 변경 유효성 체크
+            changePasswordValidChkFn      : changeInfoValidCb.changePasswordValidChkFnCb,
+            // 이메일 변경 유효성 체크
+            changeEmailValidChkFn      : changeInfoValidCb.changeEmailValidChkFnCb
+        }
+
+        var changeNicknameInput = {
+            changeSubmitFn	: function() {
+                /*<![CDATA[*/
+                var memberId = /*[[ ${memberId} ]]*/;
+
+                // 유효성 검사
+                if (!changeInfoValidChk.changeNicknameValidChkFn()) {
+                    return;
+                }
+
+                var nickname = $("input[name='nickname']").val();
+
+                var nicknameForm = {};
+                nicknameForm['toNickname'] = nickname;
+
+                $.ajax({
+                    type : "POST",
+                    url  : "/members/" + memberId + "/nickname",
+                    data        : JSON.stringify(nicknameForm),
+                    contentType : "application/json",
+                    success : function(data) {
+                        alert("닉네임 변경이 완료되었습니다.");
+                        location.href = "/members/" + memberId + "?currentMenu=profile";
+                    },
+                    error   : function(e) {
+                        alert(e.responseText);
+                    }
+                })
+                /*]]*/
+            }
+        }
+
+        var changePasswordInput = {
+            changeSubmitFn	: function() {
+                /*<![CDATA[*/
+                var memberId = /*[[ ${memberId} ]]*/;
+
+                // 유효성 검사
+                if (!changeInfoValidChk.changePasswordValidChkFn()) {
+                    return;
+                }
+
+                var fromPassword = $("input[name='from-password']").val();
+                var toPassword = $("input[name='to-password']").val();
+
+                var passwordForm = {};
+                passwordForm['fromPassword'] = fromPassword;
+                passwordForm['toPassword'] = toPassword;
+
+                $.ajax({
+                    type : "POST",
+                    url  : "/members/" + memberId + "/password",
+                    data        : JSON.stringify(passwordForm),
+                    contentType : "application/json",
+                    success : function(data) {
+                        alert("비밀번호 변경이 완료되었습니다.");
+                        location.href = "/members/" + memberId + "?currentMenu=profile";
+                    },
+                    error   : function(e) {
+                        alert(e.responseText);
+                    }
+                })
+                /*]]*/
+            }
+        }
+
+        var changeEmailInput = {
+            changeSubmitFn	: function() {
+                /*<![CDATA[*/
+                var memberId = /*[[ ${memberId} ]]*/;
+
+                // 유효성 검사
+                if (!changeInfoValidChk.changeEmailValidChkFn()) {
+                    return;
+                }
+
+                var email = $("input[name='email']").val();
+
+                var emailForm = {};
+                emailForm['toEmail'] = email;
+
+                $.ajax({
+                    type : "POST",
+                    url  : "/members/" + memberId + "/email",
+                    data        : JSON.stringify(emailForm),
+                    contentType : "application/json",
+                    success : function(data) {
+                        alert("이메일 변경이 완료되었습니다.");
+                        location.href = "/members/" + memberId + "?currentMenu=profile";
+                    },
+                    error   : function(e) {
+                        alert(e.responseText);
+                    }
+                })
+                /*]]*/
+            }
+        }
+
+    </script>
+
+    <section>
+        <div class="container" style="max-width: 960px;">
+            <div class="row justify-content-between">
+                <div class="col-4 col-md-2 w-20 m-auto mt-5 pt-5 text-center">
+                    <div class="list-group" style="max-width: 200px;">
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'profile'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='profile')}">프로필</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'nickname'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='nickname')}">닉네임
+                            변경</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'password'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='password')}">패스워드
+                            변경</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'email'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='email')}">이메일
+                            변경</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'notification'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='notification')}">알림
+                            설정</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'review'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='review')}">작성한
+                            리뷰</a>
+                    </div>
+                </div>
+                <div class="col-6 col-md-10 w-80 m-auto pt-5 text-center" style="width: 660px;">
+                    <div th:if="${currentMenu} == 'profile'">
+                        <img class="mt-5 mb-4" width="400" height="320"
+                             th:if="${profileImagePath != null}"
+                             th:src="|/images/${profileImagePath}|"/>
+                        <h1 class="h3 mb-3 fw-normal">마이페이지</h1>
+                        <h4 class="mb-3 fw-normal" th:text="|안녕하세요 ${member.nickname}님!|">인사말</h4>
+                        <div class="container">
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">성명</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.name}">성명
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">닉네임</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.nickname}">닉네임
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">이메일</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.email}">이메일
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">전화번호</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.phone}">전화번호
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">우편번호</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.address.postCode}">우편번호
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">도로명주소</div>
+                                <div class="col-6 text-end"
+                                     th:text="${member.address.roadNameAddress}">도로명주소
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mb-3">
+                                <div class="col-4 text-start">상세주소</div>
+                                <div class="col-4 text-end"
+                                     th:text="${member.address.detailAddress}">상세주소
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="separator"/>
+                        <div>
+                            <h1>DEMO</h1>
+                            <p>©2019 All Rights Reserved.</p>
+                        </div>
+                    </div>
+                    <div th:if="${currentMenu} == 'nickname'">
+                        <h4 class="mb-5 fw-normal text-primary-emphasis">닉네임 변경</h4>
+                        <div class="input-group mb-3">
+                            <input type="text" id="change-nickname" name="nickname"
+                                   class="form-control registrationInput" placeholder="닉네임"
+                                   autocomplete="off" required>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="nicknameDupChkBtn"
+                                    th:onclick="changeInfoValidChk.duplicateNicknameChkFn()">중복
+                                확인
+                            </button>
+                        </div>
+                        <button class="btn btn-success btn-large form-control mb-3"
+                                type="button"
+                                id="changeNicknameBtn"
+                                th:onClick="changeNicknameInput.changeSubmitFn()">변경하기
+                        </button>
+                    </div>
+                    <div th:if="${currentMenu} == 'password'">
+                        <h4 class="mt-5 mb-3 fw-normal text-primary-emphasis">비밀번호 변경</h4>
+                        <div class="mb-3">
+                            <input type="password" name="from-password"
+                                   id="from-password"
+                                   class="form-control registrationInput"
+                                   placeholder="기존 비밀번호" autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="to-password"
+                                   id="change-password"
+                                   class="form-control registrationInput"
+                                   placeholder="새 비밀번호" autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" name="checkPassword" class="form-control"
+                                   id="change-password-confirm"
+                                   placeholder="새 비밀번호 확인" autocomplete="off" required/>
+                        </div>
+                        <button class="btn btn-success btn-large form-control mb-3"
+                                type="button"
+                                id="changePasswordBtn"
+                                th:onClick="changePasswordInput.changeSubmitFn()">변경하기
+                        </button>
+                    </div>
+                    <div th:if="${currentMenu} == 'email'">
+                        <h4 class="mt-5 mb-3 fw-normal text-primary-emphasis">이메일 변경</h4>
+                        <div class="input-group mt-2 mb-3">
+                            <input type="text" id="change-email" name="email"
+                                   class="form-control registrationInput" placeholder="이메일"
+                                   autocomplete="off"
+                                   required>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="emailDupChkBtn"
+                                    th:onclick="changeInfoValidChk.duplicateEmailChkFn()">
+                                중복 확인
+                            </button>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" name="verificationCode" class="form-control"
+                                   placeholder="이메일 인증 번호" id="verificationCode"
+                                   autocomplete="off" required/>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="emailVerifyBtn"
+                                    th:onClick="changeInfoValidChk.verificationCodeChkFn()">확인
+                            </button>
+                        </div>
+                        <button class="btn btn-outline-primary btn-large form-control mb-3"
+                                type="button"
+                                id="request_code"
+                                th:onClick="emailValidObj.sendVerificationMail()">인증번호 요청
+                        </button>
+                        <button class="btn btn-success btn-large form-control mb-3"
+                                type="button"
+                                id="changeEmaileBtn"
+                                th:onClick="changeEmailInput.changeSubmitFn()">변경하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

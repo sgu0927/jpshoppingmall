@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+    <div>
+        <h2>From JP Shoppingmall</h2>
+        <p>아래 코드를 복사해 입력해주세요</p>
+        <div align='center' style='border:1px solid black; font-family:verdana;'>
+            <h3 style="color:purple;">회원가입 인증 코드입니다.</h3>
+            <div><strong th:text="${verificationCode}"> 인증 코드</strong></div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+    <section>
+        <div class="container" style="max-width: 660px; padding: 15px">
+            <div class="row justify-content-center">
+                <div class="col-md-10 w-100 m-auto pt-5 text-center">
+                    <form th:action="@{/product-register}" th:object="${productForm}" method="post"
+                          enctype="multipart/form-data">
+                        <img class="mt-5 mb-4" width="72" height="57"
+                             th:src="@{/images/farmer.png}"/>
+                        <h1 class="h3 mb-3 fw-normal">상품 등록</h1>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text">카테고리</label>
+                            <select class="form-select" th:field="*{categoryId}">
+                                <th:block th:each="category : ${categoryList}">
+                                    <option th:text="${category.categoryName}"
+                                            th:value="${category.id}">카테고리
+                                    </option>
+                                </th:block>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label for="productName" class="visually-hidden">상품명</label>
+                            <input type="text" id="productName" name="productName"
+                                   th:field="*{name}"
+                                   class="form-control" placeholder="상품명을 입력해주세요."
+                                   autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="visually-hidden">상품명</label>
+                            <input type="number" id="discountPercent" name="price" class="form-control"
+                                   th:field="*{discountPercent}"
+                                   placeholder="할인률을 입력해주세요(비우면 0)" min="0"
+                                   autocomplete="off"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="visually-hidden">상품명</label>
+                            <input type="number" id="price" name="price" class="form-control"
+                                   th:field="*{price}"
+                                   placeholder="가격을 입력해주세요." min="1"
+                                   autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="totalCount" class="visually-hidden">재고</label>
+                            <input type="number" id="totalCount" name="totalCount"
+                                   class="form-control"
+                                   th:field="*{totalCount}"
+                                   placeholder="상품 재고를 입력해주세요." min="1"
+                                   autocomplete="off" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">타이틀 이미지 선택</label>
+                            <input class="form-control" th:field="*{titleImageFile}" type="file"
+                                   id="formFile">
+                        </div>
+                        <div class="mb-3">
+                            <label for="formFileMultiple" class="form-label">상품 상세 이미지
+                                선택(복수개)</label>
+                            <input class="form-control" th:field="*{detailImageFiles}" type="file"
+                                   id="formFileMultiple" multiple>
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-dark btn-large form-control">등록
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-large form-control"
+                                    id="btn_loginForm">취소
+                            </button>
+                        </div>
+                    </form>
+                    <hr class="separator"/>
+                    <div>
+                        <h1>DEMO</h1>
+                        <p>©2019 All Rights Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    $('#checkPwd').click(function() {
+        const checkPassword = $('#password').val();
+        if(!checkPassword || checkPassword.trim() === ""){
+            alert("비밀번호를 입력하세요.");
+        } else{
+            $.ajax({
+                type: 'GET',
+                url: '/rest/checkPwd',
+                data: {'checkPassword': checkPassword},
+                datatype: "text"
+            }).done(function(result){
+                console.log(result);
+                if(result){
+                    console.log("비밀번호 일치");
+                    window.location.href="/settings/update";
+                } else if(!result){
+                    console.log("비밀번호 틀림");
+                    // 비밀번호가 일치하지 않으면
+                    alert("비밀번호가 맞지 않습니다.");
+                    window.location.reload();
+                }
+            }).fail(function(error){
+                alert(JSON.stringify(error));
+            })
+        }
+    });
+
+
+
+
+</script>
+
+</html>

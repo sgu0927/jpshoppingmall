@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+
+<div class="main-content" layout:fragment="content" style="margin-top: 100px;">
+
+    <script th:inline="javascript">
+        var cartObj = {
+            removeCart : function () {
+                var confirmChk = confirm("정말로 삭제하시겠습니까?");
+                if(confirmChk) {
+                    /*<![CDATA[*/
+                    var memberId = /*[[ ${memberId} ]]*/;
+                    var cartIds = [];
+
+                    $("input[type=checkbox]:checked").each(function(){
+                        cartIds.push($(this).val());
+                    })
+
+                    cartIds.forEach(function(cartId) {
+                        $.ajax({
+                            type : "DELETE",
+                            url  : "/members/" + memberId + "/carts/" + cartId,
+                            contentType : "application/json",
+                            success : function(data) {
+                                // cartObj.getCartList();
+                                location.reload();
+                            },
+                            error   : function(e) {
+                                alert(e.responseText);
+                            }
+                        })
+                    });
+                    /*]]*/
+                }
+            }
+        }
+        var paymentObj = {
+            requestPay : function () {
+                /*<![CDATA[*/
+                var memberId = /*[[ ${memberId} ]]*/;
+                var memberEmail = /*[[ ${#authentication.getPrincipal().getUsername()} ]]*/;
+                var memberName = /*[[ ${#authentication.getPrincipal().getName()} ]]*/;
+
+                var postCode = $('input[name="postCode"]').val();
+                var roadNameAddress = $('input[name="roadNameAddress"]').val();
+                var detailAddress = $('input[name="detailAddress"]').val();
+                var receiverPhone = $('input[name="receiverPhone"]').val();
+                var deliveryMessage = $('textarea[name="deliveryMessage"]').val();
+                var cartIds = [];
+
+                $("input[type=checkbox]:checked").each(function(){
+                    cartIds.push($(this).val());
+                })
+
+                $.ajax({
+                    type: "GET",
+                    url: "/members/" + memberId + "/cart-info",
+                    data: {
+                        cartIds: cartIds
+                    },
+                    success : function(data) {
+                        console.log(data);
+
+                        var paymentSuccess = {};
+
+                        var orderItemPrices = {};
+                        var totalPrice = 0;
+                        var totalDiscountPrice = 0;
+                        var displayName = "";
+
+                        if(data.length == 0) {
+                            console.log("Cart Info Array is empty!");
+                        } else if(data.length == 1){
+                            displayName = data[0].productName;
+                        } else {
+                            displayName = data[0].productName + " 외 " + (data.length -1).toString() + "종";
+                        }
+
+                        data.forEach(function(cartInfo) {
+                            totalPrice += cartInfo.price;
+                            totalDiscountPrice += cartInfo.discountPrice;
+                            orderItemPrices[cartInfo.cartId] = cartInfo.price - cartInfo.discountPrice;
+                        });
+
+                        paymentSuccess["memberId"] = memberId;
+                        paymentSuccess["memberEmail"] = memberEmail;
+                        paymentSuccess["memberName"] = memberName;
+                        paymentSuccess["amountByCartId"] = orderItemPrices;
+                        paymentSuccess["displayName"] = displayName;
+                        paymentSuccess["totalPrice"] = totalPrice;
+                        paymentSuccess["totalDiscountPrice"] = totalDiscountPrice;
+                        paymentSuccess["postCode"] = postCode;
+                        paymentSuccess["roadNameAddress"] = roadNameAddress;
+                        paymentSuccess["detailAddress"] = detailAddress;
+                        paymentSuccess["receiverPhone"] = receiverPhone;
+                        paymentSuccess["deliveryMessage"] = deliveryMessage;
+
+                        var IMP = window.IMP; // 생략가능
+                        IMP.init('imp16654871');
+
+                        IMP.request_pay({
+                            pg : 'kakaopay',
+                            pay_method : 'card',
+                            merchant_uid : new Date().getTime(),
+                            name : displayName,
+                            amount : totalPrice - totalDiscountPrice,           // 상품 가격
+                            buyer_email : memberEmail,
+                            buyer_name : memberName,
+                            buyer_addr : roadNameAddress + " " + detailAddress
+                        }, function(rsp) {
+                            if (rsp.success) {
+                                console.log(rsp);
+                                $.ajax({
+                                    type : "POST",
+                                    url  : "/payment",
+                                    contentType : "application/json",
+                                    data        : JSON.stringify(paymentSuccess),
+                                    success     : function(data) {
+                                        console.log(data);
+                                        alert("결제가 완료되었습니다.");
+                                        location.href = "/";
+                                    },
+                                    error       : function(e) {
+                                        alert(e.responseText);
+                                    }
+                                })
+                            } else {
+                                console.log(rsp);
+                                alert(rsp.error_msg);
+                            }
+                        });
+                    },
+                    error : function(error) {
+                        console.log(error)
+                        alert("error");
+                    }
+                });
+                /*]]*/
+            }
+        }
+
+
+    </script>
+
+    <div class="border border-success-subtle"
+         style="max-width: 800px; padding: 15px; margin-left: auto; margin-right: auto;">
+        <div class="row">
+            <div class="col">
+                <h4 class="text-primary mb-1">주문 정보 입력</h4>
+                <label for="postCode" class="form-label">우편번호</label>
+                <div class="input-group mb-3">
+                    <input type="text" id="postCode"
+                           name="postCode" class="form-control registrationInput"
+                           placeholder="우편번호"
+                           autocomplete="off" required>
+                    <button th:type="button" class="btn btn-outline-secondary"
+                            th:onclick="registAddrObj.searchAddrFn()">우편번호 검색
+                    </button>
+                </div>
+                <label for="roadNameAddress" class="form-label">주소</label>
+                <input type="text" id="roadNameAddress" class="form-control mb-2"
+                       name="roadNameAddress"
+                       placeholder="주소를 입력해 주세요."
+                       aria-labelledby="passwordHelpBlock">
+                <label for="detailAddress" class="form-label mb-2">상세주소</label>
+                <input type="text" id="detailAddress" class="form-control"
+                       name="detailAddress"
+                       placeholder="상세 주소를 입력해 주세요."
+                       aria-labelledby="passwordHelpBlock">
+                <hr class="separator"/>
+                <label for="receiverPhone" class="form-label mb-2">받으실분 전화번호('-' 제외)</label>
+                <input type="text" id="receiverPhone" class="form-control"
+                       name="receiverPhone"
+                       placeholder="전화번호를 '-' 없이 입력해주세요."
+                       aria-labelledby="passwordHelpBlock">
+                <label for="deliveryMessage" class="form-label mt-2 mb-2">배송 메시지(선택)</label>
+                <textarea class="form-control" placeholder="배송 메시지 입력" name="deliveryMessage"
+                          id="deliveryMessage"
+                          style="max-height: 100px"></textarea>
+            </div>
+        </div>
+    </div>
+    <div th:if="${myCarts.size} == 0">
+        <h3 class="text-center mt-3 mb-2" th:if="${myCarts.size} == 0">장바구니가 비어있습니다.</h3>
+    </div>
+    <div th:each="cart : ${myCarts}"
+         style="max-width: 960px; padding: 15px; margin-left: auto; margin-right: auto;">
+        <div class="card text-end">
+            <div class="row mt-5 mb-2">
+                <div class="col-md-1">
+                    <input class="form-check-input" type="checkbox"
+                           name="cartId"
+                           th:value="${cart.cartId}"
+                           id="flexCheckDefault" checked>
+                </div>
+                <div class="col-md-4">
+                    <a th:with="productId=${cart.productId}"
+                       th:href="@{/products/{productId}(productId=${productId})}">
+                        <img class="bd-placeholder-img card-img-top"
+                             width="300" height="300"
+                             th:src="|/images/${cart.productTitleImagePath}|"/>
+                    </a>
+                </div>
+                <div class="col-md-7">
+                    <div class="card-body">
+                        <a th:with="productId=${cart.productId}"
+                           th:href="@{/products/{productId}(productId=${productId})}"
+                           style="text-decoration: none;">
+                            <h4 class="card-text" name="productName" th:text="${cart.name}">상품명</h4>
+                        </a>
+                        <p th:unless="${cart['discountPercent'] == 0}" class="card-text mt-3">
+                            <strong class="h4 text-muted"
+                                    th:text="|${cart['discountPercent']}%|">할인율</strong>
+                            <del class="h5"
+                                 th:with="price=${cart['price']}"
+                                 th:text="|${#numbers.formatInteger(price, 0, 'COMMA')}원|">
+                                가격
+                            </del>
+                        </p>
+                        <p class="mt-3">
+                            <strong class="h5"
+                                    th:with="discountedPrice=${cart['price']} * ((100 - ${cart['discountPercent']}) / 100)"
+                                    th:text="|${#numbers.formatInteger(discountedPrice, 0, 'COMMA')}원|">
+                                할인된가격
+                            </strong>
+                        </p>
+                        <p class="h5 card-text" th:text="|수량 : ${cart.itemCount}|">수량</p>
+                        <p class="h5 card-text"
+                           th:with="totalPrice=${cart['price']} * ((100 - ${cart['discountPercent']}) / 100) * ${cart.itemCount}"
+                           th:text="|총 가격 : ${#numbers.formatInteger(totalPrice, 0, 'COMMA')}원|">총 가격</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-grid gap-2" style="max-width: 960px; padding: 15px; margin: 0 auto;">
+        <button th:type="button" class="btn btn-danger" onclick="cartObj.removeCart()">장바구니 삭제
+        </button>
+    </div>
+    <div class="d-grid gap-2" style="max-width: 960px; padding: 15px; margin: 0 auto;">
+        <button th:type="button" class="btn btn-warning" onclick="paymentObj.requestPay()">결제하기
+        </button>
+    </div>
+</div>
+</html>

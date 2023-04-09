@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headFragment">
+  <!-- Meta Tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Page Title -->
+  <title>JP Shoppingmall</title>
+
+  <!-- Favicon and Touch Icons -->
+
+  <!-- Stylesheet -->
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/custom/multileveldropdown.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/css/custom/star.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/css/custom/star-ratings.css}" rel="stylesheet" type="text/css">
+
+  <!-- external javascripts -->
+  <script th:src="@{/js/popper.min.js}"></script>
+  <script th:src="@{/js/jquery-3.6.4.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+
+
+  <!-- csrf -->
+<!--  <meta name="_csrf" th:content="${_csrf.token}">-->
+<!--  <meta name="_csrf_header" th:content="${_csrf.headerName}">-->
+
+  <!-- custom js -->
+<!--  <script th:src="@{/js/custom/register-valid.js}" type="application/json"></script>-->
+<!--  <script th:src="@{/js/custom/daum-addr-api.js}" type="application/json"></script>-->
+  <script th:src="@{/js/custom/change-info-valid.js}"></script>
+  <script th:src="@{/js/custom/register-valid.js}"></script>
+  <script th:src="@{/js/custom/daum-addr-api.js}"></script>
+
+  <!-- Daum 우편번호 API -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- 아임포트 결제모듈 -->
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+  <!--  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>-->
+  <!-- summernote 웹 에디터 -->
+  <!-- include summernote css/js -->
+
+<!--  <script>-->
+<!--      var header = $("meta[name='_csrf_header']").attr("content");-->
+<!--      var token  = $("meta[name='_csrf']").attr("content");-->
+
+<!--  </script>-->
+</head>
+</html>

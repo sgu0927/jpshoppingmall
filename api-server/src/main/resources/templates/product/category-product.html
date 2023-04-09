@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+
+<div class="main-content bg-light pt-5" layout:fragment="content">
+    <div class="border border-success-subtle mt-5"
+         style="max-width: 80%; padding: 15px; margin-left: auto; margin-right: auto;">
+        <div class="form-check form-check-inline">
+            <h6 class="text-dark">정렬</h6>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                   id="inlineRadio1"
+                   value="option1" th:checked="${sortType} == 'NEWEST'"
+                   th:onclick="|location.href='@{/category-product/{categoryId}(categoryId=${categoryId}, sortType='NEWEST')}'|">
+            <label class="form-check-label" for="inlineRadio1">최신순</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                   id="inlineRadio2"
+                   value="option2" th:checked="${sortType} == 'PRICE_ASC'"
+                   th:onclick="|location.href='@{/category-product/{categoryId}(categoryId=${categoryId}, sortType='PRICE_ASC')}'|">
+            <label class="form-check-label" for="inlineRadio2">저가순</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                   id="inlineRadio3"
+                   value="option2" th:checked="${sortType} == 'PRICE_DESC'"
+                   th:onclick="|location.href='@{/category-product/{categoryId}(categoryId=${categoryId}, sortType='PRICE_DESC')}'|">
+            <label class="form-check-label" for="inlineRadio2">고가순</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                   id="inlineRadio4"
+                   value="option2" th:checked="${sortType} == 'RATING_DESC'"
+                   th:onclick="|location.href='@{/category-product/{categoryId}(categoryId=${categoryId}, sortType='RATING_DESC')}'|">
+            <label class="form-check-label" for="inlineRadio2">만족도순</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                   id="inlineRadio5"
+                   value="option2" th:checked="${sortType} == 'DISCOUNT_PERCENT_DESC'"
+                   th:onclick="|location.href='@{/category-product/{categoryId}(categoryId=${categoryId}, sortType='DISCOUNT_PERCENT_DESC')}'|">
+            <label class="form-check-label" for="inlineRadio2">할인율순</label>
+        </div>
+    </div>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <!--            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-5 mb-5 pt-5">-->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-5">
+                <div th:each="product : ${products.content}" class="card shadow-sm">
+                    <div class="col">
+                        <a th:with="productId=${product.id}"
+                           th:href="@{/products/{productId}(productId=${productId})}"
+                           style="text-decoration: none; color: black">
+                            <th:block th:each="imageFile : ${product.productImageList}">
+                                <img class="bd-placeholder-img card-img-top"
+                                     width="300" height="300"
+                                     th:if="${imageFile.isTitle}"
+                                     th:src="|/images/${imageFile.getStoreFileName()}|"/>
+                            </th:block>
+                            <div class="card-body">
+                                <p class="h3 card-text" th:text="${product.name}">상품명</p>
+                                <div class="star-ratings">
+                                    <div
+                                        th:with="ratingToPercent=${product.rating} * 20"
+                                        class="star-ratings-fill space-x-2 text-lg"
+                                        th:style="|width: ${ratingToPercent}%;|"
+                                    >
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <div class="star-ratings-base space-x-2 text-lg">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span th:text="${product.rating}">평점</span>
+                                </div>
+                                <p th:unless="${product['discountPercent'] == 0}">
+                                    <strong class="h4 text-muted"
+                                            th:text="|${product['discountPercent']}%|">할인율</strong>
+                                    <del class="h5"
+                                         th:with="price=${product['price']}"
+                                         th:text="|${#numbers.formatInteger(price, 0, 'COMMA')}원|">
+                                        가격
+                                    </del>
+                                </p>
+                                <p>
+                                    <strong class="h4"
+                                            th:with="discountedPrice=${product['price']} * ((100 - ${product['discountPercent']}) / 100)"
+                                            th:text="|${#numbers.formatInteger(discountedPrice, 0, 'COMMA')}원|">
+                                        할인된가격
+                                    </strong>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${products.totalElements} == 0">
+        <h3 class="text-center mb-5" th:if="${products.totalElements} == 0">상품이 존재하지 않습니다.</h3>
+    </div>
+    <div class="text-center d-flex justify-content-center">
+        <nav aria-label="Page navigation" style="text-align: center;">
+            <ul class="pagination"
+                th:with="start=${T(java.lang.Math).floor(products.number/10)*10 + 1},
+                    last=(${start + 9 < products.totalPages ? start + 9 : (products.totalPages == 0 ? 1 :products.totalPages)})">
+                <li class="page-item"
+                    th:class="${products.first} ? 'page-item disabled'">
+                    <a th:href="@{__${#httpServletRequest.requestURI}__(page=0, sortType=${sortType})}"
+                       class="page-link" aria-label="First">
+                        <span aria-hidden="true">First</span>
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:class="${products.first} ? 'page-item disabled'">
+                    <a class="page-link"
+                       th:href="${products.first} ? '#' :@{__${#httpServletRequest.requestURI}__(page=${products.number}-1, sortType=${sortType})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, last)}"
+                    th:class="${page == products.number + 1} ? 'page-item active'">
+                    <a class="page-link" th:text="${page}"
+                       th:href="@{__${#httpServletRequest.requestURI}__(page=${page}-1, sortType=${sortType})}"></a>
+                </li>
+                <li class="page-item" th:class="${products.last} ? 'page-item disabled'">
+                    <a class="page-link"
+                       th:href="${products.last} ? '#' : @{__${#httpServletRequest.requestURI}__(page=${products.number + 1}, sortType=${sortType})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:class="${products.last} ? 'page-item disabled'">
+                    <a th:href="@{__${#httpServletRequest.requestURI}__(page=${products.totalPages} - 1, sortType=${sortType})}"
+                       class="page-link" aria-label="Last">
+                        <span aria-hidden="true">Last</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</html>
