@@ -18,3 +18,9 @@
 
 ## ERD
 ![jpshoppingmall_diagram](https://user-images.githubusercontent.com/26399303/230774492-17e2eeb6-077c-4d08-8dc5-a87ca25757fc.png)
+
+## Wiki
+- [Home](https://github.com/sgu0927/jpshoppingmall/wiki)
+- [Todo](https://github.com/sgu0927/jpshoppingmall/wiki/Todo-List)
+- [Troubleshooting](https://github.com/sgu0927/jpshoppingmall/wiki/Troubleshooting)
+- [참조](https://github.com/sgu0927/jpshoppingmall/wiki/%EC%B0%B8%EC%A1%B0)
