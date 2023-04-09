@@ -3,7 +3,7 @@ server:
   ssl:
     enabled: true
     key-store: keystore.p12
-    key-store-password: shoppingmall
+    key-store-password: ENC(cpQ+q/0TnonX8QedCpj+tpAE1FHKxcU7)
     key-store-type: PKCS12
     key-alias: bns-ssl
 
@@ -16,8 +16,8 @@ spring:
   mail:
     host: smtp.naver.com
     port: 465
-    username: tsi04076
-    password: u9n0zz03
+    username: ENC(R10y444N+ldfup9yMIm/csMUrc5HhA2q)
+    password: ENC(g0EzZ5WEs7kwUn2d8f4Q5gGneyXtpvnC)
     properties:
       mail:
         smtp:
