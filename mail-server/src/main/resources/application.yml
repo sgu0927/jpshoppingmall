@@ -8,6 +8,8 @@ server:
     key-alias: bns-ssl
 
 spring:
+  cache:
+    type: redis
   profiles:
     include:
       - core
@@ -31,5 +33,6 @@ spring:
             socketFactory.class: javax.net.ssl.SSLSocketFactory
         debug: true
   redis:
-    host: localhost
-    port: 6379
+    cache:
+      host: localhost
+      port: 6379
