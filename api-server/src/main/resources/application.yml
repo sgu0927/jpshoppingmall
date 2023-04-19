@@ -4,16 +4,17 @@ spring:
       - core
   kafka:
     bootstrap-servers: localhost:9092
+  cache:
+    type: redis
   session:
     storage-type: redis
   redis:
-    host: localhost
-    port: 6379
-  thymeleaf:
-    cache: false
-
-#file:
-#  dir: D:\jpshoppingmall\jpshoppingmall\images
+    cache:
+      host: localhost
+      port: 6379
+    session:
+      host: localhost
+      port: 6380
 
 #logging:
 #  level:
