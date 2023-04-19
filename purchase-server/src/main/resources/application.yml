@@ -2,14 +2,17 @@ server:
   port: 8666
 
 spring:
+  cache:
+    type: redis
   profiles:
     include:
       - core
   kafka:
     bootstrap-servers: localhost:9092
   redis:
-    host: localhost
-    port: 6379
+    cache:
+      host: localhost
+      port: 6379
 
 #logging:
 #  level:

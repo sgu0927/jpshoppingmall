@@ -1,4 +1,4 @@
-package com.jpshoppingmall.purchase.config;
+package com.jpshoppingmall.mail.config;
 
 import com.jpshoppingmall.util.PurchaseCountCacheKeyGenerator;
 import java.time.Duration;
