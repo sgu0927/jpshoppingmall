@@ -46,9 +46,4 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
-
-    public ReviewResponseDto toResponseDto() {
-        return new ReviewResponseDto(id, null, member.getNickname(), comment, rating,
-            getCreatedDateTime());
-    }
 }

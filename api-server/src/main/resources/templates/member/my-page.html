@@ -163,14 +163,10 @@
                            th:classappend="${currentMenu == 'email'} ? active"
                            th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='email')}">이메일
                             변경</a>
-                        <a class="list-group-item list-group-item-action"
-                           th:classappend="${currentMenu == 'notification'} ? active"
-                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='notification')}">알림
-                            설정</a>
-                        <a class="list-group-item list-group-item-action"
-                           th:classappend="${currentMenu == 'review'} ? active"
-                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='review')}">작성한
-                            리뷰</a>
+<!--                        <a class="list-group-item list-group-item-action"-->
+<!--                           th:classappend="${currentMenu == 'notification'} ? active"-->
+<!--                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='notification')}">알림-->
+<!--                            설정</a>-->
                     </div>
                 </div>
                 <div class="col-6 col-md-10 w-80 m-auto pt-5 text-center" style="width: 660px;">
@@ -231,7 +227,7 @@
                         </div>
                     </div>
                     <div th:if="${currentMenu} == 'nickname'">
-                        <h4 class="mb-5 fw-normal text-primary-emphasis">닉네임 변경</h4>
+                        <h4 class="mt-5 mb-5 fw-normal text-primary-emphasis">닉네임 변경</h4>
                         <div class="input-group mb-3">
                             <input type="text" id="change-nickname" name="nickname"
                                    class="form-control registrationInput" placeholder="닉네임"

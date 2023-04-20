@@ -180,6 +180,12 @@
                                    th:href="@{/members/{memberId}/orders(memberId=${memberId})}">
                                     주문내역</a>
                             </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:with="memberId=${#authentication.getPrincipal().getMemberId()}"
+                                   th:href="@{/members/{memberId}/reviews(memberId=${memberId})}">
+                                    작성한 리뷰</a>
+                            </li>
                         </ul>
                     </div>
                     <button th:onclick="|location.href='@{/logout}'|" type="button"

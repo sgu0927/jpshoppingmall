@@ -13,11 +13,13 @@ import com.jpshoppingmall.exception.CommonExceptionType;
 import com.jpshoppingmall.service.PurchaseCountService;
 import com.jpshoppingmall.type.EnumMaster.PagingType;
 import com.jpshoppingmall.usecase.CreateReviewUsecase;
+import com.jpshoppingmall.usecase.GetMemberReviewUsecase;
 import com.jpshoppingmall.usecase.GetProductDetailUsecase;
 import com.jpshoppingmall.usecase.GetProductReviewUsecase;
 import com.jpshoppingmall.util.PageRequestUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class ReviewController {
     private final CreateReviewUsecase createReviewUsecase;
     private final GetProductDetailUsecase getProductDetailUsecase;
     private final GetProductReviewUsecase getProductReviewUsecase;
+    private final GetMemberReviewUsecase getMemberReviewUsecase;
     private final ProfileImageReadService profileImageReadService;
     private final OrderItemReadService orderItemReadService;
     private final PurchaseCountService purchaseCountService;
@@ -131,6 +133,28 @@ public class ReviewController {
             PagingType.REVIEW)));
 
         return "review/product-review";
+    }
+
+    @Operation(summary = "유저 리뷰 조회")
+    @GetMapping("/members/{memberId}/reviews")
+    public String memberReviews(
+        @AuthenticationPrincipal CustomUserDetails customUser,
+        @PathVariable Long memberId,
+        @Parameter(name = "pageRequest", description = "페이징 정보") final PageRequestUtil pageRequest,
+        Model model
+    ) {
+        if (customUser == null || !Objects.equals(customUser.getMemberId(), memberId)) {
+            throw new CommonException(CommonExceptionType.INVALID_PARAMS, "잘못된 memberId 접근입니다.");
+        }
+
+        model.addAttribute("profileImagePath",
+            profileImageReadService.getMemberProfileImagePath(customUser.getMemberId()));
+        model.addAttribute("memberId", customUser.getMemberId());
+        model.addAttribute("categoryList", categoryReadService.getCategories());
+        model.addAttribute("reviews", getMemberReviewUsecase.execute(memberId, pageRequest.of(
+            PagingType.REVIEW)));
+
+        return "review/my-review";
     }
 
     private String showMessageAndRedirect(final AlertMessageDto params, Model model) {

@@ -28,8 +28,9 @@ public class GetProductReviewUsecase {
                 Member member = review.getMember();
                 String profileImagePath = profileImageReadService.getMemberProfileImagePath(
                     member.getId());
-                return new ReviewResponseDto(review.getId(), profileImagePath, member.getNickname(),
-                    review.getComment(), review.getRating(), review.getCreatedDateTime());
+                return new ReviewResponseDto(review.getId(), null, null, null,
+                    profileImagePath, member.getNickname(), review.getComment(), review.getRating(),
+                    review.getCreatedDateTime());
             }).toList();
 
         return new PageImpl<>(reviewResponseDtos, pageable, reviewPage.getTotalElements());
