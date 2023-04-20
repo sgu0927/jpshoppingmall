@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+    <section>
+        <div class="container" style="max-width: 960px; padding: 50px; margin-top: 100px;">
+            <div th:if="${reviews.totalElements} == 0">
+                <h3 class="text-center mb-5" th:if="${reviews.totalElements} == 0">리뷰가 존재하지
+                    않습니다.</h3>
+            </div>
+            <div th:each="review : ${reviews.content}"
+                 style="max-width: 960px; padding: 15px; margin-left: auto; margin-right: auto;">
+                <div class="container">
+                    <div class="row justify-content-between">
+                        <div class="col-4 text-start">
+                            <a th:with="productId=${review.productId}"
+                               th:href="@{/products/{productId}(productId=${productId})}">
+                                <img class="bd-placeholder-img card-img-top"
+                                     width="300" height="300"
+                                     th:src="|/images/${review.productTitleImagePath}|"/>
+                            </a>
+                        </div>
+                        <div class="col-5 text-start">
+                            <a th:with="productId=${review.productId}"
+                               th:href="@{/products/{productId}(productId=${productId})}"
+                               style="text-decoration: none;">
+                                <h4 class="card-text mb-2" name="productName" th:text="${review.productName}">
+                                    상품명</h4>
+                            </a>
+                            <div class="star-ratings">
+                                <div
+                                    th:with="ratingToPercent=${review.rating} * 20"
+                                    class="star-ratings-fill space-x-2 text-lg"
+                                    th:style="|width: ${ratingToPercent}%;|"
+                                >
+                                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                </div>
+                                <div class="star-ratings-base space-x-2 text-lg">
+                                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                </div>
+                            </div>
+                            <p class="mt-2" th:text="${review.comment}">리뷰 내용</p>
+
+                            <p class="mt-1"
+                               th:with="createdDateTime=${review.createdDateTime}"
+                               th:text="|${#temporals.year(createdDateTime)}년 ${#temporals.month(createdDateTime)}월 ${#temporals.day(createdDateTime)}일 작성|">
+                                >리뷰 작성 시간</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center d-flex justify-content-center">
+                <nav aria-label="Page navigation" style="text-align: center;">
+                    <ul class="pagination"
+                        th:with="start=${T(java.lang.Math).floor(reviews.number/10)*10 + 1},
+                    last=(${start + 9 < reviews.totalPages ? start + 9 : (reviews.totalPages == 0 ? 1 :reviews.totalPages)})">
+                        <li class="page-item"
+                            th:class="${reviews.first} ? 'page-item disabled'">
+                            <a th:href="@{__${#httpServletRequest.requestURI}__(page=0)}"
+                               class="page-link" aria-label="First">
+                                <span aria-hidden="true">First</span>
+                            </a>
+                        </li>
+                        <li class="page-item"
+                            th:class="${reviews.first} ? 'page-item disabled'">
+                            <a class="page-link"
+                               th:href="${reviews.first} ? '#' :@{__${#httpServletRequest.requestURI}__(page=${reviews.number}-1)}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, last)}"
+                            th:class="${page == reviews.number + 1} ? 'page-item active'">
+                            <a class="page-link" th:text="${page}"
+                               th:href="@{__${#httpServletRequest.requestURI}__(page=${page}-1)}"></a>
+                        </li>
+                        <li class="page-item" th:class="${reviews.last} ? 'page-item disabled'">
+                            <a class="page-link"
+                               th:href="${reviews.last} ? '#' : @{__${#httpServletRequest.requestURI}__(page=${reviews.number + 1})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:class="${reviews.last} ? 'page-item disabled'">
+                            <a th:href="@{__${#httpServletRequest.requestURI}__(page=${reviews.totalPages} - 1)}"
+                               class="page-link" aria-label="Last">
+                                <span aria-hidden="true">Last</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+</div>
+</html>
