@@ -52,7 +52,57 @@
 	});
 	// DOMContentLoaded  end
 
+    let removeToast;
+    function toast(content) {
+        const toast = document.getElementById("toast");
 
+        toast.classList.contains("reveal") ?
+            (clearTimeout(removeToast), removeToast = setTimeout(function () {
+                document.getElementById("toast").classList.remove("reveal")
+            }, 1000)) :
+            removeToast = setTimeout(function () {
+                document.getElementById("toast").classList.remove("reveal")
+            }, 1000)
+        toast.classList.add("reveal"),
+        toast.innerText = content
+    }
+
+    function loadNotifications () {
+        this.source = null;
+
+        this.start = function () {
+            /*<![CDATA[*/
+            var memberId = /*[[ ${memberId} ]]*/;
+
+            if(memberId !== null) {
+                this.source = new EventSource(`/members/` + memberId + `/alarm/subscribe`);
+
+                this.source.addEventListener("sse", function (event) {
+                    // var comment = JSON.parse(event.data);
+                    toast(event.data);
+                    console.log(event);
+                });
+
+                this.source.onerror = function () {
+                    this.close();
+                };
+            }
+            /*]]*/
+        };
+
+        this.stop = function() {
+            this.source.close();
+        }
+    }
+
+    notifications = new loadNotifications();
+
+    window.onload = function() {
+        notifications.start();
+    };
+    window.onbeforeunload = function() {
+        notifications.stop();
+    }
 
     </script>
 
@@ -151,6 +201,14 @@
                     </button>
                 </div>
                 <div sec:authorize="isAuthenticated()" class="text-end hstack gap-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0"
+                       th:with="memberId=${#authentication.getPrincipal().getMemberId()}"
+                       th:href="@{/members/{memberId}/notifications(memberId=${memberId}, currentMenu='unread')}">
+                        <img width="30" height="30"
+                             th:if="${notificationImagePath != null}"
+                             th:src="|/images/${notificationImagePath}|"
+                             alt="Notification">
+                    </a>
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#">
                         <img width="40" height="40"
                              th:if="${profileImagePath != null}"
@@ -189,5 +247,6 @@
             </div> <!-- container-fluid.// -->
         </nav>
     </div>
+    <div id="toast"></div>
 </header>
 </html>

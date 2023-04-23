@@ -1,9 +1,11 @@
 package com.jpshoppingmall.controller;
 
 import com.jpshoppingmall.auth.userdetails.CustomUserDetails;
+import com.jpshoppingmall.common.NotificationImage;
 import com.jpshoppingmall.common.dto.AlertMessageDto;
 import com.jpshoppingmall.domain.category.service.CategoryReadService;
 import com.jpshoppingmall.domain.member.service.ProfileImageReadService;
+import com.jpshoppingmall.domain.notification.service.NotificationReadService;
 import com.jpshoppingmall.domain.order.dto.ProductOrderDto;
 import com.jpshoppingmall.domain.order.service.ProductOrderReadService;
 import com.jpshoppingmall.domain.orderitem.service.OrderItemReadService;
@@ -39,6 +41,7 @@ public class ProductOrderController {
     private final ProductOrderReadService productOrderReadService;
     private final ProfileImageReadService profileImageReadService;
     private final OrderItemReadService orderItemReadService;
+    private final NotificationReadService notificationReadService;
 
     @GetMapping("/members/{memberId}/orders")
     public String memberOrders(
@@ -49,6 +52,12 @@ public class ProductOrderController {
     ) {
         if (!Objects.equals(customUser.getMemberId(), memberId)) {
             throw new CommonException(CommonExceptionType.INVALID_PARAMS, "잘못된 memberId 접근입니다.");
+        }
+
+        if(notificationReadService.getHasUnreadNotification(customUser.getMemberId())){
+            model.addAttribute("notificationImagePath", NotificationImage.HAS_UNREAD);
+        } else {
+            model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
         }
 
         Page<ProductOrderDto> productOrderDtos = productOrderReadService.getMemberOrders(memberId,
@@ -72,6 +81,12 @@ public class ProductOrderController {
     ) {
         if (!Objects.equals(customUser.getMemberId(), memberId)) {
             throw new CommonException(CommonExceptionType.INVALID_PARAMS, "잘못된 memberId 접근입니다.");
+        }
+
+        if(notificationReadService.getHasUnreadNotification(customUser.getMemberId())){
+            model.addAttribute("notificationImagePath", NotificationImage.HAS_UNREAD);
+        } else {
+            model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
         }
 
         model.addAttribute("memberId", memberId);

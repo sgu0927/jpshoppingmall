@@ -18,21 +18,25 @@ public class EmailVerificationProducerService {
 
     public void sendMessage(String email) {
         log.info(
-            "[EmailVerificationService] try produce email to verify email in Join - email :: {}"
-                + email);
+            "[EmailVerificationService] try produce email to verify email in Join - email :: {}",
+            email);
 
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplateString.send(TOPIC, email);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplateString.send(TOPIC,
+            email);
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onFailure(Throwable ex) {
-                log.error("[EmailVerificationService] Unable to send message=[" + email + "] due to : " + ex.getMessage());
+                log.error(
+                    "[EmailVerificationService] Unable to send message=[" + email + "] due to : "
+                        + ex.getMessage());
             }
 
             @Override
             public void onSuccess(SendResult<String, String> result) {
                 log.info(
-                    "[EmailVerificationService] Sent message=[" + email + "] with offset=[" + result.getRecordMetadata()
+                    "[EmailVerificationService] Sent message=[" + email + "] with offset=["
+                        + result.getRecordMetadata()
                         .offset() + "]");
             }
         });

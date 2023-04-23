@@ -4,6 +4,7 @@ import com.jpshoppingmall.auth.service.AuthService;
 import com.jpshoppingmall.auth.userdetails.CustomUserDetails;
 import com.jpshoppingmall.auth.vo.AuthBaseVo;
 import com.jpshoppingmall.auth.vo.AuthenticationVo;
+import com.jpshoppingmall.common.NotificationImage;
 import com.jpshoppingmall.domain.category.service.CategoryReadService;
 import com.jpshoppingmall.domain.member.service.MemberReadService;
 import com.jpshoppingmall.domain.member.service.MemberWriteService;
@@ -12,6 +13,7 @@ import com.jpshoppingmall.domain.member.vo.ChangeEmailForm;
 import com.jpshoppingmall.domain.member.vo.ChangeNicknameForm;
 import com.jpshoppingmall.domain.member.vo.ChangePasswordForm;
 import com.jpshoppingmall.domain.member.vo.EmailObject;
+import com.jpshoppingmall.domain.notification.service.NotificationReadService;
 import com.jpshoppingmall.exception.CommonException;
 import com.jpshoppingmall.exception.CommonExceptionType;
 import com.jpshoppingmall.service.EmailVerificationProducerService;
@@ -54,6 +56,7 @@ public class MemberController {
     private final EmailVerificationProducerService emailVerificationProducerService;
     private final ProfileImageReadService profileImageReadService;
     private final UploadMemberImageUsecase uploadMemberImageUsecase;
+    private final NotificationReadService notificationReadService;
 
     @GetMapping("/login")
     public String loginForm(Model model, HttpServletRequest request,
@@ -95,6 +98,12 @@ public class MemberController {
     ) {
         if (customUser == null || !Objects.equals(customUser.getMemberId(), memberId)) {
             throw new CommonException(CommonExceptionType.INVALID_PARAMS, "잘못된 memberId 접근입니다.");
+        }
+
+        if(notificationReadService.getHasUnreadNotification(customUser.getMemberId())){
+            model.addAttribute("notificationImagePath", NotificationImage.HAS_UNREAD);
+        } else {
+            model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
         }
 
         model.addAttribute("profileImagePath",

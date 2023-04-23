@@ -20,7 +20,7 @@ public class PaymentProducerService {
     public void sendMessage(PaymentSuccessDto paymentSuccessDto) {
         log.info(
             "[PaymentProducerService] try produce email to verify email in Join - paymentSuccessDto :: {}"
-                + paymentSuccessDto.toString());
+            , paymentSuccessDto.toString());
 
         ListenableFuture<SendResult<String, PaymentSuccessDto>> future = kafkaTemplatePaymentSuccessDto.send(
             TOPIC, paymentSuccessDto);

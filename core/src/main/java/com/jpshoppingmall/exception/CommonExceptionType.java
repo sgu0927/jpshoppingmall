@@ -10,6 +10,7 @@ public enum CommonExceptionType {
     INVALID_PARAMS("COMMON-002", "Invalid params"),
     UNSUPPORTED_SORT_TYPE("COMMON-003", "unsupported sort type"),
     INVALID_HEADER_PARAMS("COMMON-004", "Invalid header params"),
+    SSE_SEND_ERROR("COMMON-005", "Sse Send Error"),
 
     // member
     CANNOT_FOUND_MEMBER("MEMBER-001", "멤버를 찾을 수 없습니다."),

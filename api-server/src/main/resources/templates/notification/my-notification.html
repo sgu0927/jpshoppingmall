@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<div class="main-content" layout:fragment="content">
+
+    <script th:inline="javascript">
+
+    </script>
+
+    <section>
+        <div class="container" style="max-width: 1080px;">
+            <div class="row justify-content-between">
+                <div class="col-4 col-md-2 w-30 m-auto mt-5 pt-5 text-center">
+                    <div class="list-group" style="max-width: 300px;">
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'unread'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='unread')}">읽지
+                            않은 알림</a>
+                        <a class="list-group-item list-group-item-action"
+                           th:classappend="${currentMenu == 'read'} ? active"
+                           th:href="@{__${#httpServletRequest.requestURI}__(currentMenu='read')}">읽은
+                            알림</a>
+                    </div>
+                </div>
+                <div class="col-6 col-md-10 w-70 m-auto pt-5 text-center" style="width: 780px;">
+                    <ul th:fragment="notification-list (notifications)" class="mt-5 list-group list-group-flush">
+                        <a href="#" th:href="@{${notification.url}}" th:each="notification: ${notifications}"
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="text-muted" th:text="${notification.content}">Noti content</small>
+                                <small class="fromNow text-muted" th:text="${notification.createdDateTime}">3 days ago</small>
+                            </div>
+<!--                                <p th:text="${notification.message}" class="text-left mb-0 mt-1">message</p>-->
+                        </a>
+                    </ul>
+                    <div th:if="${notifications.size} == 0">
+                        <h3 class="text-center mt-5 mb-5" th:if="${notifications.size} == 0">알림이 없습니다.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

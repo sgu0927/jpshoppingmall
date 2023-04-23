@@ -5,4 +5,5 @@ include 'mail-server'
 include 'purchase-server'
 include 'order-server'
 include 'purchase-batch'
+include 'notification-server'
 

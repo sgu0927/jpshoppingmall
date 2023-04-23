@@ -4,6 +4,7 @@ import com.jpshoppingmall.common.Address;
 import com.jpshoppingmall.common.BaseTimeEntity;
 import com.jpshoppingmall.domain.cart.entity.Cart;
 import com.jpshoppingmall.domain.member.dto.MemberDto;
+import com.jpshoppingmall.domain.notification.entity.Notification;
 import com.jpshoppingmall.type.EnumMaster.GenderType;
 import com.jpshoppingmall.type.EnumMaster.Role;
 import java.io.Serializable;
@@ -56,6 +57,9 @@ public class Member extends BaseTimeEntity implements Serializable {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Cart> carts = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
 
     public void addCart(Cart cart) {
         carts.add(cart);

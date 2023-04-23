@@ -1,5 +1,6 @@
 package com.jpshoppingmall.config;
 
+import com.jpshoppingmall.domain.notification.dto.NotificationCreateEvent;
 import com.jpshoppingmall.domain.payment.dto.PaymentSuccessDto;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,15 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, NotificationCreateEvent> producerFactoryNotificationEvent() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+
+    @Bean
     public KafkaTemplate<String, String> kafkaTemplateString() {
         return new KafkaTemplate<>(producerFactoryString());
     }
@@ -44,5 +54,10 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, PaymentSuccessDto> kafkaTemplatePaymentSuccessDto() {
         return new KafkaTemplate<>(producerFactoryPaymentSuccessDto());
+    }
+
+    @Bean
+    public KafkaTemplate<String, NotificationCreateEvent> kafkaTemplateNotificationEvent() {
+        return new KafkaTemplate<>(producerFactoryNotificationEvent());
     }
 }

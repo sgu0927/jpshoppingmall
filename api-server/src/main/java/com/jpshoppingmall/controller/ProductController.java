@@ -1,8 +1,10 @@
 package com.jpshoppingmall.controller;
 
 import com.jpshoppingmall.auth.userdetails.CustomUserDetails;
+import com.jpshoppingmall.common.NotificationImage;
 import com.jpshoppingmall.domain.category.service.CategoryReadService;
 import com.jpshoppingmall.domain.member.service.ProfileImageReadService;
+import com.jpshoppingmall.domain.notification.service.NotificationReadService;
 import com.jpshoppingmall.domain.product.dto.ProductDetailDto;
 import com.jpshoppingmall.domain.product.vo.AddCartForm;
 import com.jpshoppingmall.domain.product.vo.ProductRegisterForm;
@@ -38,6 +40,7 @@ public class ProductController {
     private final PurchaseCountService purchaseCountService;
     private final GetCategoryProductUsecase getCategoryProductUsecase;
     private final GetProductDetailUsecase getProductDetailUsecase;
+    private final NotificationReadService notificationReadService;
 
     @GetMapping("/category-product/{categoryId}")
     public String categoryProductPage(
@@ -48,9 +51,15 @@ public class ProductController {
     ) {
         if (customUser == null) {
             model.addAttribute("profileImagePath", null);
+            model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
         } else {
             model.addAttribute("profileImagePath",
                 profileImageReadService.getMemberProfileImagePath(customUser.getMemberId()));
+            if(notificationReadService.getHasUnreadNotification(customUser.getMemberId())){
+                model.addAttribute("notificationImagePath", NotificationImage.HAS_UNREAD);
+            } else {
+                model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
+            }
         }
 
         Page<ProductDetailDto> productDetailDtoPage = getCategoryProductUsecase.execute(categoryId,
@@ -100,10 +109,16 @@ public class ProductController {
         if (customUser == null) {
             model.addAttribute("profileImagePath", null);
             model.addAttribute("memberId", null);
+            model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
         } else {
             model.addAttribute("profileImagePath",
                 profileImageReadService.getMemberProfileImagePath(customUser.getMemberId()));
             model.addAttribute("memberId", customUser.getMemberId());
+            if(notificationReadService.getHasUnreadNotification(customUser.getMemberId())){
+                model.addAttribute("notificationImagePath", NotificationImage.HAS_UNREAD);
+            } else {
+                model.addAttribute("notificationImagePath", NotificationImage.ALL_READ);
+            }
         }
 
         model.addAttribute("addCartForm", new AddCartForm());

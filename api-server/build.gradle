@@ -26,6 +26,6 @@ tasks.named('test') {
 }
 
 //Querydsl 추가, 자동 생성된 Q클래스 gradle clean으로 제거
-clean {
-    delete file('src/main/generated')
-}
+//clean {
+//    delete file('src/main/generated')
+//}
