@@ -14,7 +14,7 @@
 <img src="https://img.shields.io/badge/intellijidea-latest-000000?style=flat&logo=intellijidea&logoColor=white"/>
 
 ## 서버 구조
-![jpshoppingmall_system_architecture](https://user-images.githubusercontent.com/26399303/230774169-89118e4d-dc4e-475c-bac7-94f07f7b2d96.png)
+![jpshoppingmall_system_architecture_v2](https://user-images.githubusercontent.com/26399303/233880501-2fa81907-78e7-4030-b8e0-a103d1d8f26e.png)
 
 ## ERD
 ![jpshoppingmall_diagram](https://user-images.githubusercontent.com/26399303/230774492-17e2eeb6-077c-4d08-8dc5-a87ca25757fc.png)
